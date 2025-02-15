@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
 
 <head>
     <meta charset="UTF-8" />
@@ -34,11 +34,11 @@
     </script> -->
 </head>
 
-<body x-data="{ showMobilePreview: false, enableComponentMode: false, enableTailwind: false, enableAlpine: false }" class="dark:color-white touch-manipulation overflow-hidden dark:bg-[#24292F]"
+<body dark x-data="{ showMobilePreview: false, enableComponentMode: false, enableTailwind: false, enableAlpine: false }" class="dark:color-white touch-manipulation overflow-hidden dark:bg-[#24292F]"
     style="font-family: Inter, system-ui" x-data="body">
 
     <div class="grid h-dvh grid-rows-1 md:grid-cols-[1fr_1rem_1fr]" id="container">
-        <div id="outer-editor" class="width-screen relative grid grid-rows-[68px_1fr] overflow-hidden bg-white dark:bg-[#24292F]">
+        <div id="outer-editor" class="width-screen relative grid grid-rows-[68px_1fr] overflow-hidden bg-[#24292F]">
             <div class="flex items-center justify-between gap-2 px-4">
                 <div class="flex items-center gap-3">
                     <div class="flex items-center gap-2">
@@ -53,20 +53,6 @@
                             </button>
 
                             <div class="menu-view" @click.outside="openMenu = false" x-show="openMenu" x-transition x-cloak>
-
-                                <ul class="grid items-center w-full grid-cols-1 gap-2">
-
-                                    <p>Settings</p>
-
-                                    <li class="has-[input:checked]:text-blue-500 bg-gray-100 dark:text-white btn dark:bg-white/5">
-                                        <input switch type="checkbox" name="run-on-load" id="run-on-load">
-                                        <label class="w-full cursor-pointer" for="run-on-load">Run on page load</label>
-                                    </li>
-
-                                </ul>
-
-                                <div class="w-full h-px my-4 bg-black/10 dark:bg-white/10"></div>
-
 
                                 <div id="hide-on-shared">
                                     <ul>
@@ -105,11 +91,11 @@
 
                                 <ul class="grid grid-cols-1 gap-2">
                                     <li>
-                                        <span class="block">JnsCode by
-                                            <a class="text-amber-500 dark:text-ambre-900 hover:underline" href="https://jns.gg">Jonas</a>
+                                        <span class="block">Jnscode by
+                                            <a class="text-amber-500 dark:text-ambre-900 hover:underline" href="https://jonas.zone">Jonas</a>
                                             -
-                                            <a href="https://github.com/jnsdotgg/jnscode" class="text-amber-500 hover:underline">
-                                                View on GitHub
+                                            <a href="https://codeberg.org/tijn/jnscode" class="text-amber-500 hover:underline">
+                                                View on Codeberg
                                             </a>
                                         </span>
                                     </li>
@@ -214,8 +200,8 @@
             </button>
         </div>
 
-        <script src="assets/editor.js"></script>
-        <script src="assets/resizeHandler.js"></script>
+        <script type="module" src="assets/editor.js"></script>
+        <script type="module" src="assets/resizeHandler.js"></script>
         <script type="module" src="assets/format.js"></script>
     </div>
 </body>
