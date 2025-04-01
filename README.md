@@ -8,4 +8,4 @@
 - [Emmet](https://code.visualstudio.com/docs/editor/emmet) support
 - Fast code sharing without an account
 
-Use it at https://code.jonas.zone
+Use it at https://code.tijn.dev
