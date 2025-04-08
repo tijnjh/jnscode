@@ -5,15 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>code</title>
     <script src="https://unpkg.com/fflate@0.8.0"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/loader.js"></script>
-    <script src="https://unpkg.com/emmet-monaco-es/dist/emmet-monaco.min.js"></script> -->
     <script src="https://unpkg.com/alpinejs" defer></script>
-    <link rel="icon" type="image/x-icon" href="/static/favicon.ico" />
-    <link rel="stylesheet" href="dist/output.css" />
+
+    <!-- <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/loader.js"></script> -->
+    <script src="/node_modules/monaco-editor/min/vs/loader.js"></script>
+
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta content="code.tijn.dev" property="og:title" />
     <meta content="Anonymous code sharing" property="og:description" />
-    <meta content="/static/logo-32x32.png" property="og:image" />
-    <meta name="theme-color" content="#F59E0B" />
+    <meta content="/logo-32x32.png" property="og:image" />
+    <link rel="stylesheet" href="/src/style.css" />
     <style>
       [x-cloak] {
         display: none;
@@ -26,7 +27,7 @@
   </head>
 
   <body
-    x-data="{ showMobilePreview: false, enableComponentMode: false, enableTailwind: false, enableAlpine: false }"
+    x-data="{ showMobilePreview: false, currentTab: 'html' }"
     class="dark:color-white touch-manipulation overflow-hidden dark:bg-[#24292F]"
     x-data="body"
   >
@@ -36,9 +37,9 @@
     >
       <div
         id="outer-editor"
-        class="width-screen relative grid grid-rows-[68px_1fr] overflow-hidden bg-[#24292F]"
+        class="width-screen relative grid grid-rows-[min-content_min-content_1fr] overflow-hidden bg-[#1e1e1e]"
       >
-        <div class="flex items-center justify-between gap-2 px-4">
+        <div class="flex items-center justify-between gap-2 p-4">
           <div class="flex items-center gap-3">
             <div class="flex items-center gap-2">
               <div x-data="{ openMenu: false }">
@@ -77,7 +78,7 @@
                         >
                           <img
                             class="p-1 bg-gray-200 rounded dark:bg-white/5"
-                            src="/static/prettier.svg"
+                            src="/prettier.svg"
                             alt="prettier logo"
                           />
                           Format with Prettier
@@ -264,10 +265,57 @@
           </div>
         </div>
         <div
+          id="tabs"
+          class="*:border-zinc-700 *:font-mono *:hover:underline border-y border-zinc-700 *:border-r *:text-white flex *:w-24 *:rounded-none! bg-[#1e1e1e]"
+        >
+          <button
+            data-lang="html"
+            class="btn"
+            @click="currentTab = 'html'"
+            :class="{ 'bg-zinc-700 ': currentTab === 'html' }"
+          >
+            html
+          </button>
+          <button
+            data-lang="css"
+            class="btn"
+            @click="currentTab = 'css'"
+            :class="{ 'bg-zinc-700 ': currentTab === 'css' }"
+          >
+            css
+          </button>
+          <button
+            data-lang="js"
+            class="btn"
+            @click="currentTab = 'js'"
+            :class="{ 'bg-zinc-700 ': currentTab === 'js' }"
+          >
+            js
+          </button>
+        </div>
+
+        <div
+          class="isolate relative *:absolute *:inset-0 *:h-full *:transition-[filter] *:duration-500"
           :class="{ 'brightness-50': showMobilePreview }"
-          class="h-full transition-[filter] duration-500"
-          id="editor"
-        ></div>
+        >
+          <div
+            :style="{ zIndex:  currentTab === 'html' ? '100' : '0' }"
+            class="tab-btn"
+            id="editor-html"
+          ></div>
+
+          <div
+            :style="{ zIndex:  currentTab === 'css' ? '100' : '0' }"
+            class="tab-btn"
+            id="editor-css"
+          ></div>
+
+          <div
+            :style="{ zIndex:  currentTab === 'js' ? '100' : '0' }"
+            class="tab-btn"
+            id="editor-js"
+          ></div>
+        </div>
       </div>
 
       <div
@@ -286,7 +334,7 @@
           id="preview"
           referrerpolicy="noreferrer"
           sandbox="allow-modals allow-downloads allow-scripts allow-forms"
-          src="/static/start.html"
+          src="/start.html"
           credentialless="true"
         >
         </iframe>
@@ -333,6 +381,6 @@
 
     <div id="toaster"></div>
 
-    <script type="module" src="src/main.js"></script>
+    <script type="module" src="/src/main.js"></script>
   </body>
 </html>

@@ -1,10 +1,13 @@
-import * as monaco from "https://cdn.jsdelivr.net/npm/monaco-editor/+esm";
-import { emmetHTML } from "https://cdn.jsdelivr.net/npm/emmet-monaco-es/+esm";
+import "./style.css";
+
+import { emmetHTML } from "emmet-monaco-es";
+
+import { code } from "./lib/state.js";
 
 import "./lib/format.js";
 import "./lib/resize-handler.js";
 
-import { theme } from "./lib/theme.js";
+// import { theme } from "./lib/theme.js";
 import { toast } from "./lib/toast.js";
 import { padBase64, extractTitle } from "./lib/utils.js";
 
@@ -12,63 +15,114 @@ import { padBase64, extractTitle } from "./lib/utils.js";
 // dom bindings //
 //////////////////
 
-const elEditCodeBtn = document.getElementById("edit-code-btn");
-const elClearBtn = document.getElementById("clear-btn");
-const elRunBtns = Array.from(document.getElementsByClassName("run-btn"));
-const elShareBtns = Array.from(document.getElementsByClassName("share-btn"));
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => Array.from(document.querySelectorAll(s));
+
+const elTitle = $("title");
+
+const elEditorHtml = $("#editor-html");
+const elEditorCss = $("#editor-css");
+const elEditorJs = $("#editor-js");
+
+const elPreview = $("#preview");
+
+const elEditCodeBtn = $("#edit-code-btn");
+const elClearBtn = $("#clear-btn");
+const elRunBtns = $$(".run-btn");
+const elShareBtns = $$(".share-btn");
 
 ///////////////////
 // monaco editor //
 ///////////////////
 
-let monacoEditor;
-
-function createEditor() {
-  monacoEditor = monaco.editor.create(document.getElementById("editor"), {
-    language: "html",
-    automaticLayout: true,
-    cursorBlinking: "smooth",
-    smoothScrolling: true,
-    fontSize: 13,
-    minimap: { enabled: false },
-    tabSize: 2,
-  });
+require.config({ paths: { vs: "../../node_modules/monaco-editor/min/vs" } });
+require(["vs/editor/editor.main"], () => {
+  e.html = monaco.editor.create(elEditorHtml, configWithLang("html"));
+  e.css = monaco.editor.create(elEditorCss, configWithLang("css"));
+  e.js = monaco.editor.create(elEditorJs, configWithLang("javascript"));
 
   emmetHTML(monaco);
 
-  if (dataParam !== null && dataParam.trim() !== "") {
-    monacoEditor.updateOptions({ readOnly: true });
-    localStorage.setItem("code", decodedDataParam);
-    monacoEditor.setValue(decodedDataParam);
+  activeEditor = e.html;
 
-    var editCodeBtn = document.getElementById("edit-code-btn");
-    var hideOnShared = document.getElementById("hide-on-shared");
+  // if (dataParam !== null && dataParam.trim() !== "") {
+  //   for (const e of editors) {
+  //     e.updateOptions({ readOnly: true });
 
-    editCodeBtn.classList.remove("hidden!");
-    hideOnShared.style.display = "none";
-  } else {
-    monacoEditor.setValue(localStorage.getItem("code") || "");
-  }
+  //     localStorage.setItem("code", decodedDataParam);
+  //     e.setValue(decodedDataParam);
+  //   }css
 
-  monaco.editor.defineTheme("jnscode-dark", theme);
-  monaco.editor.setTheme("jnscode-dark");
+  //   var editCodeBtn = document.getElementById("edit-code-btn");
+  //   var hideOnShared = document.getElementById("hide-on-shared");
+
+  //   editCodeBtn.classList.remove("hidden!");
+  //   hideOnShared.style.display = "none";
+  // } else {
+  //   // monacoEditor.setValue(localStorage.getItem("code") || "");
+  // }
+
+  // monaco.editor.defineTheme("jnscode-dark", theme);
+  // monaco.editor.setTheme("jnscode-dark");
+
+  // monaco.editor.setTheme("vs-dark");
 
   renderPreview();
-}
+});
+
+const configWithLang = (lang) => ({
+  automaticLayout: true,
+  cursorBlinking: "smooth",
+  smoothScrolling: true,
+  fontSize: 13,
+  theme: "vs-dark",
+  minimap: { enabled: false },
+  tabSize: 2,
+  language: lang,
+});
+
+const e = {
+  html: null,
+  css: null,
+  js: null,
+};
+
+let activeEditor;
+
+const template = () => `
+  <!doctype html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        ${e.css.getValue()}
+      </style>
+  </head>
+  <body>
+    ${e.html.getValue()}
+    <script>
+      ${e.js.getValue()}
+    </script>
+  </body>
+  </html>
+`;
 
 function renderPreview() {
-  const code = monacoEditor.getValue();
-  localStorage.setItem("code", code);
+  if (!elPreview) return;
 
-  const url = URL.createObjectURL(new Blob([code], { type: "text/html" }));
-  const previewElement = document.getElementById("preview");
-  if (!previewElement) return;
+  const editorVal = activeEditor.getValue();
+  code.set(activeEditor, editorVal);
 
-  previewElement.setAttribute("src", url);
+  const url = URL.createObjectURL(
+    new Blob([template()], { type: "text/html" })
+  );
+
+  elPreview.setAttribute("src", url);
 
   window.previousURL ? URL.revokeObjectURL(window.previousURL) : null;
   window.previousURL = url;
-  document.getElementsByTagName("title")[0].innerHTML = `${extractTitle(code)}`;
+  elTitle.textContent = extractTitle(editorVal);
 }
 
 /////////////
@@ -76,9 +130,6 @@ function renderPreview() {
 /////////////
 
 const dataParam = new URL(window.location.href).searchParams.get("c");
-
-// init editor after loading sharing params
-createEditor();
 
 let decodedDataParam;
 
@@ -98,7 +149,7 @@ if (dataParam !== null && dataParam.trim() !== "") {
 }
 
 export function share(mode) {
-  let newData = monacoEditor.getValue().trim();
+  let newData = activeEditor.getValue().trim();
 
   const compressed = fflate.strToU8(newData);
 
@@ -160,17 +211,19 @@ for (const elRunBtn of elRunBtns) {
 }
 
 for (const elShareBtn of elShareBtns) {
-  elShareBtn.onclick = () => share(elShareBtn.dataset.shareAs);
+  elShareBtn.onclick = () => {
+    share(elShareBtn.dataset.shareAs);
+  };
 }
 
 elEditCodeBtn.onclick = () => {
-  localStorage.setItem("code", monacoEditor.getValue());
+  code.set(activeEditor.getValue());
   location.href = location.href.split("?")[0];
 };
 
 elClearBtn.onclick = () => {
   localStorage.setItem("code", "");
-  monacoEditor.setValue("");
+  activeEditor.setValue("");
   renderPreview();
   toast.success("Cleared code");
 };
