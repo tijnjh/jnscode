@@ -4,8 +4,8 @@
     "tailwindcss": "^4.0.17"
   },
   "scripts": {
-    "tw:build": "npx @tailwindcss/cli -i ./assets/input.css -o ./assets/output.css",
-    "tw:watch": "npx @tailwindcss/cli -i ./assets/input.css -o ./assets/output.css --watch",
+    "tw:build": "npx @tailwindcss/cli -i ./src/main.css -o ./dist/output.css",
+    "tw:watch": "npx @tailwindcss/cli -i ./src/main.css -o ./dist/output.css --watch",
     "dev": "npx live-server"
   }
 }

@@ -1,4 +1,4 @@
-# JnsCode
+# jnscode
 
 ### Anonymous code sharing
 
