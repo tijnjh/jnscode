@@ -2,5 +2,8 @@
   "dependencies": {
     "@tailwindcss/cli": "^4.0.17",
     "tailwindcss": "^4.0.17"
+  },
+  "scripts": {
+    "build": "npx @tailwindcss/cli -i ./assets/input.css -o ./assets/output.css"
   }
 }

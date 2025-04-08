@@ -1,209 +1,340 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JnsCode</title>
+    <title>code</title>
     <script src="https://unpkg.com/fflate@0.8.0"></script>
     <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.44.0/min/vs/loader.js"></script>
     <script src="https://unpkg.com/emmet-monaco-es/dist/emmet-monaco.min.js"></script>
-    <script src="https://cdn.jns.gg/ntoast.js"></script>
-    <script src="//unpkg.com/alpinejs" defer></script>
-    <link href="https://fonts.cdnfonts.com/css/inter" rel="stylesheet" />
+    <script src="https://unpkg.com/alpinejs" defer></script>
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <link rel="stylesheet" href="assets/output.css" />
-    <meta content="JnsCode" property="og:title">
+    <meta content="code.tijn.dev" property="og:title" />
     <meta content="Anonymous code sharing" property="og:description" />
     <meta content="/assets/logo-32x32.png" property="og:image" />
     <meta name="theme-color" content="#F59E0B" />
     <style>
-        [x-cloak] {
-            display: none;
-        }
+      [x-cloak] {
+        display: none;
+      }
 
-        .monaco-editor {
-            position: absolute !important;
-        }
+      .monaco-editor {
+        position: absolute !important;
+      }
     </style>
-    <!-- <script>
-        if (window.location.hostname !== 'code.jns.gg') {
-            const newUrl = `https://code.jns.gg${window.location.pathname}${window.location.search}`;
-            window.location.href = newUrl;
-        }
-    </script> -->
-</head>
+  </head>
 
-<body x-data="{ showMobilePreview: false, enableComponentMode: false, enableTailwind: false, enableAlpine: false }" class="dark:color-white touch-manipulation overflow-hidden dark:bg-[#24292F]"
-    style="font-family: Inter, system-ui" x-data="body">
+  <body
+    x-data="{ showMobilePreview: false, enableComponentMode: false, enableTailwind: false, enableAlpine: false }"
+    class="dark:color-white touch-manipulation overflow-hidden dark:bg-[#24292F]"
+    x-data="body"
+  >
+    <div
+      class="grid h-dvh grid-rows-1 md:grid-cols-[1fr_1rem_1fr]"
+      id="container"
+    >
+      <div
+        id="outer-editor"
+        class="width-screen relative grid grid-rows-[68px_1fr] overflow-hidden bg-[#24292F]"
+      >
+        <div class="flex items-center justify-between gap-2 px-4">
+          <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2">
+              <div x-data="{ openMenu: false }">
+                <button
+                  class="p-0 text-white bg-amber-500 dark:bg-amber-900 size-9 btn"
+                  @click="openMenu =! openMenu"
+                  :disabled="openMenu"
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 256 256"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M39.0759 167.559C25.2289 153.712 18.3054 146.789 15.7113 138.805C13.4296 131.782 13.4296 124.218 15.7113 117.195C18.3054 109.211 25.2289 102.288 39.0759 88.4408L88.4408 39.0759C102.288 25.2289 109.211 18.3054 117.195 15.7113C124.218 13.4296 131.782 13.4296 138.805 15.7113C146.789 18.3054 153.712 25.2289 167.559 39.0759L216.924 88.4408C230.771 102.288 237.695 109.211 240.289 117.195C242.57 124.218 242.57 131.782 240.289 138.805C237.695 146.789 230.771 153.712 216.924 167.559L167.559 216.924C153.712 230.771 146.789 237.695 138.805 240.289C131.782 242.57 124.218 242.57 117.195 240.289C109.211 237.695 102.288 230.771 88.4408 216.924L39.0759 167.559Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </button>
 
-    <div class="grid h-dvh grid-rows-1 md:grid-cols-[1fr_1rem_1fr]" id="container">
-        <div id="outer-editor" class="width-screen relative grid grid-rows-[68px_1fr] overflow-hidden bg-[#24292F]">
-            <div class="flex items-center justify-between gap-2 px-4">
-                <div class="flex items-center gap-3">
-                    <div class="flex items-center gap-2">
-                        <div x-data="{ openMenu: false }">
-
-                            <button class="p-0 text-white bg-amber-500 dark:bg-amber-900 size-9 btn " @click="openMenu =! openMenu" :disabled="openMenu">
-                                <svg width="16" height="16" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M39.0759 167.559C25.2289 153.712 18.3054 146.789 15.7113 138.805C13.4296 131.782 13.4296 124.218 15.7113 117.195C18.3054 109.211 25.2289 102.288 39.0759 88.4408L88.4408 39.0759C102.288 25.2289 109.211 18.3054 117.195 15.7113C124.218 13.4296 131.782 13.4296 138.805 15.7113C146.789 18.3054 153.712 25.2289 167.559 39.0759L216.924 88.4408C230.771 102.288 237.695 109.211 240.289 117.195C242.57 124.218 242.57 131.782 240.289 138.805C237.695 146.789 230.771 153.712 216.924 167.559L167.559 216.924C153.712 230.771 146.789 237.695 138.805 240.289C131.782 242.57 124.218 242.57 117.195 240.289C109.211 237.695 102.288 230.771 88.4408 216.924L39.0759 167.559Z"
-                                        fill="currentColor" />
-                                </svg>
-                            </button>
-
-                            <div class="menu-view" @click.outside="openMenu = false" x-show="openMenu" x-transition x-cloak>
-
-                                <div id="hide-on-shared">
-                                    <ul>
-                                        <li>
-                                            <button id="format-btn" class="w-full mb-2 bg-gray-100 dark:text-white btn dark:bg-white/5">
-                                                <img class="p-1 bg-gray-200 rounded dark:bg-white/5" src="assets/prettier.svg" alt="prettier logo">
-                                                Format with Prettier
-                                            </button>
-                                        </li>
-                                        <li class="w-full">
-                                            <div class="w-full" x-data="{ open: false }">
-                                                <button id="open-clear-btn" class="w-full text-red-500 bg-red-100 btn dark:bg-red-500/10" @click=" open=! open" :disabled="open">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-                                                        <path fill-rule="evenodd"
-                                                            d="M5 3.25V4H2.75a.75.75 0 0 0 0 1.5h.3l.815 8.15A1.5 1.5 0 0 0 5.357 15h5.285a1.5 1.5 0 0 0 1.493-1.35l.815-8.15h.3a.75.75 0 0 0 0-1.5H11v-.75A2.25 2.25 0 0 0 8.75 1h-1.5A2.25 2.25 0 0 0 5 3.25Zm2.25-.75a.75.75 0 0 0-.75.75V4h3v-.75a.75.75 0 0 0-.75-.75h-1.5ZM6.05 6a.75.75 0 0 1 .787.713l.275 5.5a.75.75 0 0 1-1.498.075l-.275-5.5A.75.75 0 0 1 6.05 6Zm3.9 0a.75.75 0 0 1 .712.787l-.275 5.5a.75.75 0 0 1-1.498-.075l.275-5.5a.75.75 0 0 1 .786-.711Z"
-                                                            clip-rule="evenodd" />
-                                                    </svg>
-                                                    Clear all code
-                                                </button>
-                                                <div class="menu-view" @click.outside="open = false" x-show="open" x-transition x-cloak>
-                                                    <p class="mb-2">
-                                                        Are you sure you want to your clear your
-                                                        code?
-                                                    </p>
-                                                    <button id="clear-btn" @click="openMenu = false, open = false" class="w-full text-red-500 bg-red-100 btn dark:bg-red-500/10">
-                                                        Confirm
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                    <div class="w-full h-px my-4 bg-black/10 dark:bg-white/10"></div>
-                                </div>
-
-
-
-                                <ul class="grid grid-cols-1 gap-2">
-                                    <li>
-                                        <span class="block">Jnscode by
-                                            <a class="text-amber-500 dark:text-ambre-900 hover:underline" href="https://jonas.zone">Jonas</a>
-                                            -
-                                            <a href="https://codeberg.org/tijn/jnscode" class="text-amber-500 hover:underline">
-                                                View on Codeberg
-                                            </a>
-                                        </span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
+                <div
+                  class="menu-view"
+                  @click.outside="openMenu = false"
+                  x-show="openMenu"
+                  x-transition
+                  x-cloak
+                >
+                  <div id="hide-on-shared">
+                    <ul>
+                      <li>
+                        <button
+                          id="format-btn"
+                          class="w-full mb-2 bg-gray-100 dark:text-white btn dark:bg-white/5"
+                        >
+                          <img
+                            class="p-1 bg-gray-200 rounded dark:bg-white/5"
+                            src="assets/prettier.svg"
+                            alt="prettier logo"
+                          />
+                          Format with Prettier
+                        </button>
+                      </li>
+                      <li class="w-full">
                         <div class="w-full" x-data="{ open: false }">
-                            <button class="text-blue-500 bg-blue-100 btn dark:bg-blue-500/15" @click=" open=! open" :disabled="open">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-                                    <path d="M7.25 10.25a.75.75 0 0 0 1.5 0V4.56l2.22 2.22a.75.75 0 1 0 1.06-1.06l-3.5-3.5a.75.75 0 0 0-1.06 0l-3.5 3.5a.75.75 0 0 0 1.06 1.06l2.22-2.22v5.69Z" />
-                                    <path
-                                        d="M3.5 9.75a.75.75 0 0 0-1.5 0v1.5A2.75 2.75 0 0 0 4.75 14h6.5A2.75 2.75 0 0 0 14 11.25v-1.5a.75.75 0 0 0-1.5 0v1.5c0 .69-.56 1.25-1.25 1.25h-6.5c-.69 0-1.25-.56-1.25-1.25v-1.5Z" />
-                                </svg>
-
-                                Share
+                          <button
+                            id="open-clear-btn"
+                            class="w-full text-red-500 bg-red-100 btn dark:bg-red-500/10"
+                            @click=" open=! open"
+                            :disabled="open"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 16 16"
+                              fill="currentColor"
+                              class="w-4 h-4"
+                            >
+                              <path
+                                fill-rule="evenodd"
+                                d="M5 3.25V4H2.75a.75.75 0 0 0 0 1.5h.3l.815 8.15A1.5 1.5 0 0 0 5.357 15h5.285a1.5 1.5 0 0 0 1.493-1.35l.815-8.15h.3a.75.75 0 0 0 0-1.5H11v-.75A2.25 2.25 0 0 0 8.75 1h-1.5A2.25 2.25 0 0 0 5 3.25Zm2.25-.75a.75.75 0 0 0-.75.75V4h3v-.75a.75.75 0 0 0-.75-.75h-1.5ZM6.05 6a.75.75 0 0 1 .787.713l.275 5.5a.75.75 0 0 1-1.498.075l-.275-5.5A.75.75 0 0 1 6.05 6Zm3.9 0a.75.75 0 0 1 .712.787l-.275 5.5a.75.75 0 0 1-1.498-.075l.275-5.5a.75.75 0 0 1 .786-.711Z"
+                                clip-rule="evenodd"
+                              />
+                            </svg>
+                            Clear all code
+                          </button>
+                          <div
+                            class="menu-view"
+                            @click.outside="open = false"
+                            x-show="open"
+                            x-transition
+                            x-cloak
+                          >
+                            <p class="mb-2">
+                              Are you sure you want to your clear your code?
+                            </p>
+                            <button
+                              id="clear-btn"
+                              @click="openMenu = false, open = false"
+                              class="w-full text-red-500 bg-red-100 btn dark:bg-red-500/10"
+                            >
+                              Confirm
                             </button>
-
-                            <div class="menu-view" @click.outside="open = false" x-show="open" x-transition x-cloak>
-
-                                <ul class="grid items-center w-full grid-cols-1">
-
-                                    <li class="flex justify-between">
-                                        <p>Link options</p>
-                                        <p class="opacity-40">(Click to copy)</p>
-                                    </li>
-
-                                    <div class="w-full h-px my-4 bg-black/10 dark:bg-white/10"></div>
-
-                                    <li class="mb-4">
-                                        <div class="grid gap-2">
-
-                                            <button title="Will be long" @click="open = false" onclick="share('full')" class="w-full bg-gray-100 dark:text-white btn dark:bg-white/5">
-                                                Full URL
-                                            </button>
-                                            <button title="[document title](full url)" @click="open = false" onclick="share('markdown')"
-                                                class="w-full bg-gray-100 dark:text-white btn dark:bg-white/5">
-                                                Markdown
-                                            </button>
-                                            <button @click="open = false" onclick="share('html')"
-                                                class="w-full bg-gray-100 dark:text-white btn dark:bg-white/5">
-                                                HTML
-                                            </button>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
+                          </div>
                         </div>
-                    </div>
+                      </li>
+                    </ul>
+                    <div
+                      class="w-full h-px my-4 bg-black/10 dark:bg-white/10"
+                    ></div>
+                  </div>
+
+                  <ul class="grid grid-cols-1 gap-2">
+                    <li>
+                      <span class="block"
+                        >Jnscode by
+                        <a
+                          class="text-amber-500 dark:text-ambre-900 hover:underline"
+                          href="https://jonas.zone"
+                          >Jonas</a
+                        >
+                        -
+                        <a
+                          href="https://codeberg.org/tijn/jnscode"
+                          class="text-amber-500 hover:underline"
+                        >
+                          View on Codeberg
+                        </a>
+                      </span>
+                    </li>
+                  </ul>
                 </div>
+              </div>
 
+              <div class="w-full" x-data="{ open: false }">
+                <button
+                  class="text-blue-500 bg-blue-100 btn dark:bg-blue-500/15"
+                  @click=" open=! open"
+                  :disabled="open"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                    class="w-4 h-4"
+                  >
+                    <path
+                      d="M7.25 10.25a.75.75 0 0 0 1.5 0V4.56l2.22 2.22a.75.75 0 1 0 1.06-1.06l-3.5-3.5a.75.75 0 0 0-1.06 0l-3.5 3.5a.75.75 0 0 0 1.06 1.06l2.22-2.22v5.69Z"
+                    />
+                    <path
+                      d="M3.5 9.75a.75.75 0 0 0-1.5 0v1.5A2.75 2.75 0 0 0 4.75 14h6.5A2.75 2.75 0 0 0 14 11.25v-1.5a.75.75 0 0 0-1.5 0v1.5c0 .69-.56 1.25-1.25 1.25h-6.5c-.69 0-1.25-.56-1.25-1.25v-1.5Z"
+                    />
+                  </svg>
 
-                <div class="flex items-center gap-2">
+                  Share
+                </button>
 
-                    <button id="edit-code-btn" class="hidden text-blue-500 bg-blue-100 btn dark:bg-blue-500/15">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-                            <path fill-rule="evenodd"
-                                d="M11.013 2.513a1.75 1.75 0 0 1 2.475 2.474L6.226 12.25a2.751 2.751 0 0 1-.892.596l-2.047.848a.75.75 0 0 1-.98-.98l.848-2.047a2.75 2.75 0 0 1 .596-.892l7.262-7.261Z"
-                                clip-rule="evenodd" />
-                        </svg>
-                        Edit
-                    </button>
+                <div
+                  class="menu-view"
+                  @click.outside="open = false"
+                  x-show="open"
+                  x-transition
+                  x-cloak
+                >
+                  <ul class="grid items-center w-full grid-cols-1">
+                    <li class="flex justify-between">
+                      <p>Link options</p>
+                      <p class="opacity-40">(Click to copy)</p>
+                    </li>
 
+                    <div
+                      class="w-full h-px my-4 bg-black/10 dark:bg-white/10"
+                    ></div>
 
-                    <button class="hidden text-white bg-green-500 md:flex btn dark:bg-green-900" @click="renderPreview">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4">
-                            <path d="M3 3.732a1.5 1.5 0 0 1 2.305-1.265l6.706 4.267a1.5 1.5 0 0 1 0 2.531l-6.706 4.268A1.5 1.5 0 0 1 3 12.267V3.732Z" />
-                        </svg>
-                        Run
-                    </button>
+                    <li class="mb-4">
+                      <div class="grid gap-2">
+                        <button
+                          title="Will be long"
+                          @click="open = false"
+                          class="share-btn w-full bg-gray-100 dark:text-white btn dark:bg-white/5"
+                          data-share-as="full"
+                        >
+                          Full URL
+                        </button>
+                        <button
+                          title="[document title](full url)"
+                          @click="open = false"
+                          class="share-btn w-full bg-gray-100 dark:text-white btn dark:bg-white/5"
+                          data-share-as="markdown"
+                        >
+                          Markdown
+                        </button>
+                        <button
+                          @click="open = false"
+                          class="share-btn w-full bg-gray-100 dark:text-white btn dark:bg-white/5"
+                          data-share-as="html"
+                        >
+                          HTML
+                        </button>
+                      </div>
+                    </li>
+                  </ul>
                 </div>
+              </div>
             </div>
-            <div :class="{ 'brightness-50': showMobilePreview }" class="h-full transition-[filter] duration-500" id="editor"></div>
-        </div>
+          </div>
 
-        <div id="handle" style="left: 50%"
-            class="z-20 hidden border-x border-gray-200 dark:border-white/10 h-full w-4 cursor-ew-resize place-items-center bg-gray-100 after:block after:h-12 after:w-1 after:rounded-full after:bg-gray-400 md:grid dark:bg-[#1A1D20] dark:after:bg-[#808386]">
-        </div>
-
-        <div id="outer-preview" :style="{ transform: window.innerWidth < 1024 ? showMobilePreview ? 'translatey(0)' : 'translatey(100%)' : '' }"
-            class="fixed top-0 flex-grow w-full overflow-hidden transition-transform duration-300 translate-y-full h-dvh md:relative md:top-0 md:h-dvh md:translate-y-0">
-            <iframe class="w-full h-full bg-white border-0" id="preview" referrerpolicy="noreferrer" sandbox="allow-modals allow-downloads allow-scripts allow-forms" src="start.html"
-                credentialless="true">
-            </iframe>
-        </div>
-
-        <div class="fixed flex gap-2 dark:text-gray-200 left-4 bottom-4">
-
-            <button style="opacity: 1 !important;" @click="showMobilePreview = ! showMobilePreview" class="z-50 text-white bg-black btn dark:bg-white dark:text-black md:hidden">
-                <svg xmlns="http://www.w3.org/2000/svg" :style="`transform: rotateX(${showMobilePreview ? '180deg' : '0'})`" viewBox="0 0 16 16" fill="currentColor"
-                    class="transition-transform duration-300 size-6">
-                    <path fill-rule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z"
-                        clip-rule="evenodd" />
-                </svg>
-
+          <div class="flex items-center gap-2">
+            <button
+              id="edit-code-btn"
+              class="hidden! text-blue-500 bg-blue-100 btn dark:bg-blue-500/15"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                class="w-4 h-4"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M11.013 2.513a1.75 1.75 0 0 1 2.475 2.474L6.226 12.25a2.751 2.751 0 0 1-.892.596l-2.047.848a.75.75 0 0 1-.98-.98l.848-2.047a2.75 2.75 0 0 1 .596-.892l7.262-7.261Z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              Edit
             </button>
-            <button style="opacity: 1 !important;" class="z-50 text-white bg-green-500 btn dark:bg-green-900 md:hidden" @click="renderPreview">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="size-4">
-                    <path d="M3 3.732a1.5 1.5 0 0 1 2.305-1.265l6.706 4.267a1.5 1.5 0 0 1 0 2.531l-6.706 4.268A1.5 1.5 0 0 1 3 12.267V3.732Z" />
-                </svg>
-                Run
-            </button>
-        </div>
 
-        <script type="module" src="assets/editor.js"></script>
-        <script type="module" src="assets/resizeHandler.js"></script>
-        <script type="module" src="assets/format.js"></script>
+            <button
+              class="run-btn hidden text-white bg-green-500 md:flex btn dark:bg-green-900"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                class="w-4 h-4"
+              >
+                <path
+                  d="M3 3.732a1.5 1.5 0 0 1 2.305-1.265l6.706 4.267a1.5 1.5 0 0 1 0 2.531l-6.706 4.268A1.5 1.5 0 0 1 3 12.267V3.732Z"
+                />
+              </svg>
+              Run
+            </button>
+          </div>
+        </div>
+        <div
+          :class="{ 'brightness-50': showMobilePreview }"
+          class="h-full transition-[filter] duration-500"
+          id="editor"
+        ></div>
+      </div>
+
+      <div
+        id="handle"
+        style="left: 50%"
+        class="z-20 hidden border-x border-gray-200 dark:border-white/10 h-full w-4 cursor-ew-resize place-items-center bg-gray-100 after:block after:h-12 after:w-1 after:rounded-full after:bg-gray-400 md:grid dark:bg-[#1A1D20] dark:after:bg-[#808386]"
+      ></div>
+
+      <div
+        id="outer-preview"
+        :style="{ transform: window.innerWidth < 1024 ? showMobilePreview ? 'translatey(0)' : 'translatey(100%)' : '' }"
+        class="fixed top-0 flex-grow w-full overflow-hidden transition-transform duration-300 translate-y-full h-dvh md:relative md:top-0 md:h-dvh md:translate-y-0"
+      >
+        <iframe
+          class="w-full h-full bg-white border-0"
+          id="preview"
+          referrerpolicy="noreferrer"
+          sandbox="allow-modals allow-downloads allow-scripts allow-forms"
+          src="start.html"
+          credentialless="true"
+        >
+        </iframe>
+      </div>
+
+      <div class="fixed flex gap-2 dark:text-gray-200 left-4 bottom-4">
+        <button
+          style="opacity: 1 !important"
+          @click="showMobilePreview = ! showMobilePreview"
+          class="z-50 text-white bg-black btn dark:bg-white dark:text-black md:hidden!"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            :style="`transform: rotateX(${showMobilePreview ? '180deg' : '0'})`"
+            viewBox="0 0 16 16"
+            fill="currentColor"
+            class="transition-transform duration-300 size-6"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </button>
+        <button
+          style="opacity: 1 !important"
+          class="run-btn z-50 text-white bg-green-500 btn dark:bg-green-900 md:hidden!"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 16 16"
+            fill="currentColor"
+            class="size-4"
+          >
+            <path
+              d="M3 3.732a1.5 1.5 0 0 1 2.305-1.265l6.706 4.267a1.5 1.5 0 0 1 0 2.531l-6.706 4.268A1.5 1.5 0 0 1 3 12.267V3.732Z"
+            />
+          </svg>
+          Run
+        </button>
+      </div>
     </div>
-</body>
 
+    <div id="toaster"></div>
+
+    <script type="module" src="assets/editor.js"></script>
+    <script type="module" src="assets/resizeHandler.js"></script>
+    <script type="module" src="assets/format.js"></script>
+  </body>
 </html>

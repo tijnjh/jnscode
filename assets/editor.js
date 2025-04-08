@@ -1,6 +1,6 @@
 import { theme } from "./theme.js";
+import { toast } from "./toast.js";
 
-const shareBtn = document.getElementById("share-btn");
 const editCodebtn = document.getElementById("edit-code-btn");
 const clearBtn = document.getElementById("clear-btn");
 const dataParam = new URLSearchParams(window.location.search).get("c");
@@ -43,7 +43,7 @@ if (dataParam !== null && dataParam.trim() !== "") {
 require.config({
   paths: { vs: "https://cdn.jsdelivr.net/npm/monaco-editor@0.26.1/min/vs" },
 });
-require(["vs/editor/editor.main"], function () {
+require(["vs/editor/editor.main"], () => {
   createEditor();
 });
 
@@ -68,10 +68,8 @@ function createEditor() {
     var editCodeBtn = document.getElementById("edit-code-btn");
     var hideOnShared = document.getElementById("hide-on-shared");
 
-    if (editCodeBtn && hideOnShared) {
-      editCodeBtn.style.display = "flex";
-      hideOnShared.style.display = "none";
-    }
+    editCodeBtn.style.display = "flex";
+    hideOnShared.style.display = "none";
   } else {
     window.editor.setValue(localStorage.getItem("code") || "");
   }
@@ -88,6 +86,14 @@ window.onkeydown = (e) => {
     renderPreview();
   }
 };
+
+for (const runBtn of [...document.getElementsByClassName("run-btn")]) {
+  runBtn.onclick = renderPreview;
+}
+
+for (const runBtn of [...document.getElementsByClassName("share-btn")]) {
+  runBtn.onclick = () => share(runBtn.dataset.shareAs);
+}
 
 function renderPreview() {
   localStorage.setItem("code", window.editor.getValue());
@@ -134,15 +140,21 @@ export function share(mode) {
     ? `${currentURL}?c=${base64Compressed}`
     : currentURL;
 
-  if (mode === "full") {
-    navigator.clipboard.writeText(newURL);
-    nToast("Copied full link to clipboard");
-  } else if (mode === "markdown") {
-    navigator.clipboard.writeText(`[${extractTitle()}](${newURL})`);
-    nToast("Copied markdown to clipboard");
-  } else if (mode === "html") {
-    navigator.clipboard.writeText(`<a href="${newURL}">${extractTitle()}</a>`);
-    alert("Copied HTML to clipboard");
+  try {
+    if (mode === "full") {
+      navigator.clipboard.writeText(newURL);
+      toast.success("Copied full link to clipboard");
+    } else if (mode === "markdown") {
+      navigator.clipboard.writeText(`[${extractTitle()}](${newURL})`);
+      toast.success("Copied markdown to clipboard");
+    } else if (mode === "html") {
+      navigator.clipboard.writeText(
+        `<a href="${newURL}">${extractTitle()}</a>`
+      );
+      toast.success("Copied HTML to clipboard");
+    }
+  } catch (err) {
+    toast.error("Failed to copy to clipboard");
   }
 }
 
