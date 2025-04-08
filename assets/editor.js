@@ -68,7 +68,7 @@ function createEditor() {
     var editCodeBtn = document.getElementById("edit-code-btn");
     var hideOnShared = document.getElementById("hide-on-shared");
 
-    editCodeBtn.style.display = "flex";
+    editCodeBtn.classList.remove("hidden!")
     hideOnShared.style.display = "none";
   } else {
     window.editor.setValue(localStorage.getItem("code") || "");
