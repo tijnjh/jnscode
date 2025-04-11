@@ -1,11 +1,15 @@
 @import "tailwindcss";
 
 .menu-view {
-  @apply fixed left-4 right-4 z-50 rounded-md mt-2 border border-gray-100 shadow bg-white p-4 text-sm font-medium text-black md:left-auto md:right-auto md:w-72 dark:border-[#1B1F23] dark:bg-[#24292F] dark:text-white;
+  @apply;
 }
 
 .btn {
   @apply flex items-center justify-center gap-1.5 px-3 font-medium rounded-md h-9 cursor-pointer focus-visible:outline-none focus-visible:ring disabled:pointer-events-none disabled:opacity-50 text-sm active:translate-y-px;
+}
+
+body {
+  @apply dark:text-white touch-manipulation overflow-hidden dark:bg-[#24292F];
 }
 
 #toaster {
